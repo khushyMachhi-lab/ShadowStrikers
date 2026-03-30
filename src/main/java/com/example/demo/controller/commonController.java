@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,12 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/") // Base mapping for the application
 public class commonController {
+	
+	@Value("${admin.email}")
+	private String adminEmail;
+
+	@Value("${admin.password}")
+	private String adminPassword;
 	
 	@Autowired
     private UserService userService;
@@ -155,8 +162,8 @@ public class commonController {
             Model model) {
 
         // ADMIN CHECK
-    	if ("gunjesh.m.machhi@gmail.com".equalsIgnoreCase(loginId)) {
-            if (password.equals("Gunjesh@3004")) {
+    	if (adminEmail.equalsIgnoreCase(loginId)) {
+    	    if (adminPassword.equals(password)) {
                 return "redirect:/admin/dashboard";
             } else {
                 model.addAttribute("loginError", "Invalid Admin Password");
