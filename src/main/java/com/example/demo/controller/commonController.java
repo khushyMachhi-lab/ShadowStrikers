@@ -164,6 +164,7 @@ public class commonController {
         // ADMIN CHECK
     	if (adminEmail.equalsIgnoreCase(loginId)) {
     	    if (adminPassword.equals(password)) {
+    	    	session.setAttribute("adminLoggedIn", true);
                 return "redirect:/admin/dashboard";
             } else {
                 model.addAttribute("loginError", "Invalid Admin Password");

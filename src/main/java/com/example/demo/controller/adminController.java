@@ -54,6 +54,7 @@ import com.example.demo.service.TournamentService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 
 
@@ -90,7 +91,13 @@ public class adminController {
 	
 	// --- Admin Dashboard --- //
 	@GetMapping("/dashboard")
-	public String adminDashboard(Model model) {
+	public String adminDashboard(HttpSession session, Model model) {
+		
+		Boolean isAdmin = (Boolean) session.getAttribute("adminLoggedIn");
+
+	    if (isAdmin == null || !isAdmin) {
+	        return "redirect:/login"; 
+	    }
 		
 		model.addAttribute("recentActivities", dashboardService.getRecentActivities());
 		model.addAttribute("upcomingActivities", dashboardService.getUpcomingActivities());
