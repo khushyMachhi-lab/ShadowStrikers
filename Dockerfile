@@ -1,27 +1,20 @@
-# Use Java 21 JDK for building and running
+# Step 1: Java 21 vapro
 FROM eclipse-temurin:21-jdk-jammy
 
-# Set working directory
+# Step 2: Working directory set karo
 WORKDIR /app
 
-# Copy full project files
+# Step 3: Badhi files copy karo
 COPY . .
 
-# Give permission to Maven wrapper
+# Step 4: Maven wrapper ne permission aapo
 RUN chmod +x mvnw
 
-# Build jar inside container (This creates the target folder and jar)
+# Step 5: Project build karo (Aa jar file banavshe)
 RUN ./mvnw clean package -DskipTests
 
-# EXPOSE port 8080 (Render's default)
+# Step 6: Port expose karo
 EXPOSE 8080
 
-# --- IMPORTANT: Pass Render Environment Variables to Spring Boot ---
-# Aa lines Render na Dashboard mathi values lai ne Spring Boot ne apshe
-ENV DB_URL=${DB_URL}
-ENV DB_USERNAME=${DB_USERNAME}
-ENV DB_PASSWORD=${DB_PASSWORD}
-ENV PORT=8080
-
-# Run the application with dynamic port and database settings
-ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-jar", "target/student-registrtion-0.0.1-SNAPSHOT.jar"]
+# Step 7: Application run karo (Direct jar file name sathe)
+ENTRYPOINT ["java", "-jar", "target/student-registrtion-0.0.1-SNAPSHOT.jar"]
