@@ -1,17 +1,12 @@
-# Java 21 વાપરો
 FROM eclipse-temurin:21-jdk-jammy
 
-# કામ કરવાનું ફોલ્ડર સેટ કરો
 WORKDIR /app
 
-# Maven wrapper અને pom.xml કોપી કરો
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline
+# Copy jar file
+COPY target/student-registrtion-0.0.1-SNAPSHOT.jar app.jar
 
-# આખો કોડ કોપી કરો
-COPY src ./src
+# Expose port
+EXPOSE 8088
 
-# એપ્લિકેશન રન કરો
-CMD ["./mvnw", "spring-boot:run"]
+# Run jar file
+ENTRYPOINT ["java", "-jar", "app.jar"]
