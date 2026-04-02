@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ShadowStrikers
+    env: docker
+    plan: free
+    region: ohio
+    healthCheckPath: /
+    initialDelaySeconds: 300
+    envVars:
+      - key: PORT
+        value: 8080
