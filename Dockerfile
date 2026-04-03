@@ -16,5 +16,4 @@ RUN ./mvnw clean package -DskipTests
 # Step 6: Port expose karo
 EXPOSE 8080
 
-# Step 7: Application run karo (Direct jar file name sathe)
-ENTRYPOINT ["java", "-jar", "target/student-registrtion-0.0.1-SNAPSHOT.jar"]
+CMD ["sh", "-c", "java -Dserver.port=${PORT} -jar target/*.jar"]
