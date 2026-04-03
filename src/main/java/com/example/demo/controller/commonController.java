@@ -46,7 +46,7 @@ public class commonController {
 	@Autowired
     private EmailService emailService;
 	
-	@GetMapping("/home")
+	@GetMapping({"/","/home"})
 	public String userHome() {
 	    return "common/home-page";
 	}
