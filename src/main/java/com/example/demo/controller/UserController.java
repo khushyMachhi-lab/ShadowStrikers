@@ -414,9 +414,15 @@ public class UserController {
 	        headerTable.addCell(cell);
 
 	        try {
-	            // Path must be correct as per your deployment
-	            String logoPath = "src/main/resources/static/logo/logo_2.png";
-	            Image logo = Image.getInstance(logoPath);
+	            // Load logo from classpath for Docker compatibility
+	            var logoStream = getClass().getClassLoader().getResourceAsStream("static/logo/logo_2.png");
+	            Image logo;
+	            if (logoStream != null) {
+	                logo = Image.getInstance(logoStream.readAllBytes());
+	            } else {
+	                headerTable.addCell(new PdfPCell(new Phrase("")));
+	                return;
+	            }
 	            logo.scaleToFit(60, 60);
 	            PdfPCell logoCell = new PdfPCell(logo);
 	            logoCell.setBackgroundColor(themeColor);
