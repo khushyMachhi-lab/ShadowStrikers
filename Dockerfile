@@ -1,19 +1,33 @@
-# Step 1: Java 21 vapro
-FROM eclipse-temurin:21-jdk-jammy
+# ---- Stage 1: Build ----
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
-# Step 2: Working directory set karo
 WORKDIR /app
 
-# Step 3: Badhi files copy karo
-COPY . .
+# Copy pom.xml first (for dependency caching)
+COPY pom.xml .
 
-# Step 4: Maven wrapper ne permission aapo
-RUN chmod +x mvnw
+# Download dependencies (cached layer unless pom.xml changes)
+RUN mvn dependency:go-offline -B
 
-# Step 5: Project build karo (Aa jar file banavshe)
-RUN ./mvnw clean package -DskipTests
+# Copy source code and build
+COPY src src
+RUN mvn clean package -DskipTests -B
 
-# Step 6: Port expose karo
-EXPOSE 8080
+# ---- Stage 2: Run ----
+FROM eclipse-temurin:21-jre-jammy
 
-CMD ["sh", "-c", "java -Dserver.port=${PORT} -jar target/*.jar"]
+WORKDIR /app
+
+# Create upload directories
+RUN mkdir -p /app/uploads/user-photos /app/uploads/payment-screenshots /app/uploads/documents /app/uploads/logo
+
+# Copy the WAR from builder stage
+COPY --from=builder /app/target/*.war app.war
+
+# Create a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.war"]

@@ -1,21 +1,41 @@
 version: '3.8'
+
 services:
-  db:
+  mysql:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: register_student_db
-      MYSQL_ROOT_PASSWORD: Khushy0611
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-shadowstrikers}
+      MYSQL_USER: ${MYSQL_USER:-shadowstriker}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-shadowstriker123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword123}
     ports:
-      - "3307:3306"
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
+    restart: always
     ports:
-      - "8088:8088"
+      - "8081:8081"
     depends_on:
-      - db
+      mysql:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/register_student_db?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: Khushy0611
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-shadowstrikers}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-shadowstriker}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-shadowstriker123}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@shadowstrikers.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  mysql_data:
+  uploads:

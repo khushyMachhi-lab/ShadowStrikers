@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -61,7 +62,13 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/admin") 
 public class adminController {
-	
+
+	@Value("${file.documents-dir:./src/main/resources/static/documents/}")
+	private String documentsDir;
+
+	@Value("${file.payment-dir:./src/main/resources/static/payment-screenshots/}")
+	private String paymentDir;
+
 	@Autowired
     private UserService userService;
 	
@@ -370,7 +377,7 @@ public class adminController {
 	@GetMapping("/studentsRecords/documents/download/{fileName}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
 	    try {
-	        Path filePath = Paths.get("src/main/resources/static/documents/").resolve(fileName).normalize();
+	        Path filePath = Paths.get(documentsDir).resolve(fileName).normalize();
 	        Resource resource = new UrlResource(filePath.toUri());
 
 	        if (resource.exists()) {
@@ -486,7 +493,7 @@ public class adminController {
 	@ResponseBody
 	public ResponseEntity<Resource> getPaymentImage(@PathVariable String filename) {
 	    try {
-	        Path filePath = Paths.get("src/main/resources/static/payment-screenshots/").resolve(filename).normalize();
+	        Path filePath = Paths.get(paymentDir).resolve(filename).normalize();
 	        Resource resource = new UrlResource(filePath.toUri());
 
 	        if (resource.exists()) {

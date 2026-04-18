@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -10,25 +11,35 @@ import org.springframework.web.servlet.mvc.WebContentInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	
+
+	@Value("${file.upload-dir:./src/main/resources/static/user-photos/}")
+	private String uploadDir;
+
+	@Value("${file.payment-dir:./src/main/resources/static/payment-screenshots/}")
+	private String paymentDir;
+
+	@Value("${file.documents-dir:./src/main/resources/static/documents/}")
+	private String documentsDir;
+
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // આ લાઈન તમારા પ્રોજેક્ટના સાચા પાથને URL સાથે જોડે છે
-        String uploadPath = Paths.get("src/main/resources/static/user-photos").toAbsolutePath().toUri().toString();
-        
         registry.addResourceHandler("/user-photos/**")
-                .addResourceLocations(uploadPath)
-                .setCachePeriod(0); // Cache 0 રાખવાથી નવી ઈમેજ તરત દેખાશે
+                .addResourceLocations(Paths.get(uploadDir).toAbsolutePath().toUri().toString())
+                .setCachePeriod(0);
+
+        registry.addResourceHandler("/payment-screenshots/**")
+                .addResourceLocations(Paths.get(paymentDir).toAbsolutePath().toUri().toString())
+                .setCachePeriod(0);
+
+        registry.addResourceHandler("/documents/**")
+                .addResourceLocations(Paths.get(documentsDir).toAbsolutePath().toUri().toString())
+                .setCachePeriod(0);
     }
-	
+
 	@Override
     public void addInterceptors(InterceptorRegistry registry) {
         WebContentInterceptor interceptor = new WebContentInterceptor();
-        
-        // 0 સેકન્ડ કેશ એટલે બ્રાઉઝર ડેટા સ્ટોર નહીં કરે
         interceptor.setCacheSeconds(0);
-        
-        // આ લાઈન બધા જ URL (/**) પર આ નિયમ લાગુ કરશે
         registry.addInterceptor(interceptor).addPathPatterns("/**");
     }
 

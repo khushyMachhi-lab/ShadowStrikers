@@ -34,5 +34,8 @@ build/
 
 /tokens/
 /src/main/resources/credentials.json
+
+### Environment & Secrets ###
+.env
 /src/main/resources/application.properties
 /target/

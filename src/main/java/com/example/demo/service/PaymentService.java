@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,13 +19,15 @@ import com.example.demo.repository.PaymentRepository;
 
 @Service
 public class PaymentService {
-	
+
 	@Autowired
     private PaymentRepository paymentRepository;
-	
+
+	@Value("${file.payment-dir:./src/main/resources/static/payment-screenshots/}")
+	private String paymentUploadDir;
+
 	public String saveScreenshot(MultipartFile file) throws IOException {
-	    String uploadDir = "src/main/resources/static/payment-screenshots/";
-	    Path uploadPath = Paths.get(uploadDir);
+	    Path uploadPath = Paths.get(paymentUploadDir);
 
 	    if (!Files.exists(uploadPath)) {
 	        Files.createDirectories(uploadPath);
@@ -35,22 +38,21 @@ public class PaymentService {
 	        Path filePath = uploadPath.resolve(fileName);
 	        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 	    }
-	    return fileName; 
+	    return fileName;
 	}
-	
+
     public List<Payment> getPaymentsByUser(User user) {
         return paymentRepository.findByUserOrderByPaymentDateDesc(user);
     }
 
-    // ૨. પેમેન્ટ સેવ કરવા માટે (જો તમારે જરૂર હોય તો)
     public Payment savePayment(Payment payment) {
         return paymentRepository.save(payment);
     }
-    
+
     public Payment getPaymentById(Long id) {
         return paymentRepository.findById(id).orElse(null);
     }
-    
+
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
     }
